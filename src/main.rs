@@ -331,15 +331,15 @@ fn main() {
     let v: Vec<_> = counter.into_iter().map(|x| x + 1).collect();
     println!("{:?}", v);
     let v: Vec<_> = Counter::new()
-            .zip(Counter::new().skip(1))
-            .map(|(a, b)| a * b)
-            .collect();
+        .zip(Counter::new().skip(1))
+        .map(|(a, b)| a * b)
+        .collect();
     println!("{:?}", v);
     let sum: u32 = Counter::new()
-            .zip(Counter::new().skip(1))
-            .map(|(a, b)| a * b)
-            .filter(|x| x % 3 == 0)
-            .sum();
+        .zip(Counter::new().skip(1))
+        .map(|(a, b)| a * b)
+        .filter(|x| x % 3 == 0)
+        .sum();
     println!("{}", sum);
 
     // ---------------------------
@@ -409,7 +409,7 @@ fn main() {
             leaf.parent.borrow().upgrade(),
         );
     } // -> 离开作用域，此时，Rc<branch> 的强引用（strong_count）为 0，但是 Weak<branch> 弱引用数（weak_count）仍然为 1（引用 Weak<branch> 的 Rc<leaf> 仍然存在），
-    // weak_count 无需计数为 0 就能使 Rc<branch> 实例被清理。
+      // weak_count 无需计数为 0 就能使 Rc<branch> 实例被清理。
     println!(
         "leaf strong = {}, weak = {}, parent = {:?}",
         Rc::strong_count(&leaf),
@@ -937,7 +937,7 @@ fn main() {
     println!("{}", s);
     let mut s: String = "Hello".to_string();
     let w = "World";
-    s.push_str(w);// 并不需要获取 w 的所有权
+    s.push_str(w); // 并不需要获取 w 的所有权
     s.push('!');
     println!("{} {}", s, w);
 
@@ -948,18 +948,21 @@ fn main() {
     let s1 = String::from("Hello, ");
     let s2 = String::from("World!");
     let s3 = s1 + &s2; // 注意 s1 被移动了，不能继续使用
-    // println!("{} {} {}", s1, s3, s2);
+                       // println!("{} {} {}", s1, s3, s2);
     println!("{} {}", s3, s2);
 
-    for c in "नमˑे".chars() {
-        println!("{}", c);
+    let hello = "测试中文字符串";
+    for c in hello.chars() {
+        print!("{} ", c);
     }
-    for b in "नमˑे".bytes() {
-        println!("{}", b);
+    println!("");
+    for b in hello.bytes() {
+        print!("{} ", b);
     }
-    let hello = "Здравствуйте";
-    let s = &hello[0..4];
-    println!("&hello[0..4]={}", s);
+    println!("");
+    // let s = hello[1]; // Rust 的字符串不支持索引
+    // let s = &hello[0..4]; // thread 'main' panicked at 'byte index 4 is not a char boundary; it is inside '试' (bytes 3..6) of `测试中文字符串`', src/libcore/str/mod.rs:2219:5
+    print!("{}", &hello[0..3]);
 }
 
 fn test_tuple(t: (i32, &str)) {
@@ -1265,9 +1268,9 @@ impl ToString for Tweet {
 //}
 
 fn notify<T, U>(t: &T, u: &U) -> String
-    where
-            T: Summary + ToString,
-            U: Summary,
+where
+    T: Summary + ToString,
+    U: Summary,
 {
     format!("{}, {}", u.summarize(), t.to_string())
 }
@@ -1335,18 +1338,18 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
 }
 
 struct Cacher<T, D, F>
-    where
-            T: Fn(&D) -> F,
+where
+    T: Fn(&D) -> F,
 {
     calculation: T,
     value: HashMap<D, F>,
 }
 
 impl<T, D, F> Cacher<T, D, F>
-    where
-            D: Hash + Eq,
-            F: Copy,
-            T: Fn(&D) -> F,
+where
+    D: Hash + Eq,
+    F: Copy,
+    T: Fn(&D) -> F,
 {
     fn new(calculation: T) -> Cacher<T, D, F> {
         Self {
@@ -1406,10 +1409,10 @@ struct Shoe {
 
 fn shoes_in_my_size(shoes: Vec<Shoe>, shoe_size: u32) -> Vec<Shoe> {
     shoes
-            // .iter() //  a collection of type `std::vec::Vec<Shoe>` cannot be built from `std::iter::Iterator<Item=&Shoe>`
-            .into_iter() //获取 vector 所有权的迭代器
-            .filter(|s| s.size == shoe_size)
-            .collect()
+        // .iter() //  a collection of type `std::vec::Vec<Shoe>` cannot be built from `std::iter::Iterator<Item=&Shoe>`
+        .into_iter() //获取 vector 所有权的迭代器
+        .filter(|s| s.size == shoe_size)
+        .collect()
 }
 
 struct Counter {
