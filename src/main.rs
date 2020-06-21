@@ -409,7 +409,7 @@ fn main() {
             leaf.parent.borrow().upgrade(),
         );
     } // -> 离开作用域，此时，Rc<branch> 的强引用（strong_count）为 0，但是 Weak<branch> 弱引用数（weak_count）仍然为 1（引用 Weak<branch> 的 Rc<leaf> 仍然存在），
-      // weak_count 无需计数为 0 就能使 Rc<branch> 实例被清理。
+    // weak_count 无需计数为 0 就能使 Rc<branch> 实例被清理。
     println!(
         "leaf strong = {}, weak = {}, parent = {:?}",
         Rc::strong_count(&leaf),
@@ -917,13 +917,13 @@ fn main() {
 
     // ---------------------------
     println!("---------------------------");
-    use hello_macro::HelloMacro;
-    use hello_macro_derive::HelloMacro;
+    // use hello_macro::HelloMacro;
+    // use hello_macro_derive::HelloMacro;
 
-    #[derive(HelloMacro)]
-    struct Pancakes;
+    // #[derive(HelloMacro)]
+    // struct Pancakes;
 
-    Pancakes::hello_macro();
+    // Pancakes::hello_macro();
 
     let user1 = User {
         username: String::from("hllo"),
@@ -948,7 +948,7 @@ fn main() {
     let s1 = String::from("Hello, ");
     let s2 = String::from("World!");
     let s3 = s1 + &s2; // 注意 s1 被移动了，不能继续使用
-                       // println!("{} {} {}", s1, s3, s2);
+    // println!("{} {} {}", s1, s3, s2);
     println!("{} {}", s3, s2);
 
     let hello = "测试中文字符串";
@@ -962,7 +962,86 @@ fn main() {
     println!("");
     // let s = hello[1]; // Rust 的字符串不支持索引
     // let s = &hello[0..4]; // thread 'main' panicked at 'byte index 4 is not a char boundary; it is inside '试' (bytes 3..6) of `测试中文字符串`', src/libcore/str/mod.rs:2219:5
-    print!("{}", &hello[0..3]);
+    println!("{}", &hello[0..3]);
+
+    println!("--------------HashMap-----------");
+
+    let mut scores = HashMap::new();
+    scores.insert(String::from("Blue"), 10);
+    scores.insert(String::from("Yellow"), 50);
+    println!("{:?}", scores);
+    for (k, v) in &scores {
+        println!("k {}, v {}", k, v);
+    }
+    // 只在键没有对应值时插入
+    // Entry 的 or_insert 方法在键对应的值存在时就返回这个值的 Entry ，
+    // 如果不存在则将参数作为新值插入并返回修改过的 Entry
+    let x3 = scores.entry("Blue".to_string()).or_insert(60);
+    println!("{}", x3);
+    let x2 = scores.entry("Red".to_string()).or_insert(55);
+    println!("{}", x2);
+    println!("{:?}", scores);
+
+    let nms = vec![String::from("Blue"), String::from("Yellow")];
+    let scs = vec![10, 50];
+    let scores: HashMap<_, _> = nms.iter().zip(scs.iter()).collect();
+    println!("{:?}", scores);
+
+    let field_name = String::from("hello");
+    let field_value = 456;
+    let mut map1 = HashMap::new();
+    map1.insert(field_name, field_value);
+    // borrow of moved value: `field_name`
+    // println!("{} {} {:?}", field_name, field_value, map1);
+    println!("{} {:?}", field_value, map1);
+
+    let k = &String::from("hello");
+    let v = String::from("world");
+    let mut map1 = HashMap::new();
+    map1.insert(k, v);
+    // borrow of moved value: `v`
+    // println!("{} {} {:?}", k, v, map1);
+    println!("{} {:?}", *k, map1);
+
+    let option = map1.get(k);
+    println!("{}", option.unwrap());
+
+    let text = "hello world wonderful world";
+    let mut map = HashMap::new();
+    for tex in text.split_whitespace() {
+        let counts = map.entry(tex).or_insert(0);
+        *counts += 1;
+    }
+    println!("{:?}", map);
+
+    println!("----------------错误处理-----------------");
+    let fnames = "hello2.txt";
+    let result = File::open(fnames);
+    let file = match result {
+        Ok(f) => f,
+        // Err(e) => {
+        //     println!("Problem opening the file: {:?}", e);
+        //
+        //     File::create(fnames).unwrap()
+        // }
+        Err(e) => match e.kind() {
+            ErrorKind::NotFound => {
+                match File::create(fnames) {
+                    Ok(f) => f,
+                    Err(e) => panic!("Problem creating the file: {:?}", e),
+                }
+            }
+            oe => panic!("Problem opening the file: {:?}", oe),
+        }
+    };
+    println!("{:?}", file);
+
+    println!("----------------match 匹配 枚举------------------");
+    let m = Message::Quit;
+    match m {
+        Message::Write(s) => println!("{}", s),
+        abc => println!("{:?}", abc),
+    }
 }
 
 fn test_tuple(t: (i32, &str)) {
@@ -1268,9 +1347,9 @@ impl ToString for Tweet {
 //}
 
 fn notify<T, U>(t: &T, u: &U) -> String
-where
-    T: Summary + ToString,
-    U: Summary,
+    where
+        T: Summary + ToString,
+        U: Summary,
 {
     format!("{}, {}", u.summarize(), t.to_string())
 }
@@ -1338,18 +1417,18 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
 }
 
 struct Cacher<T, D, F>
-where
-    T: Fn(&D) -> F,
+    where
+        T: Fn(&D) -> F,
 {
     calculation: T,
     value: HashMap<D, F>,
 }
 
 impl<T, D, F> Cacher<T, D, F>
-where
-    D: Hash + Eq,
-    F: Copy,
-    T: Fn(&D) -> F,
+    where
+        D: Hash + Eq,
+        F: Copy,
+        T: Fn(&D) -> F,
 {
     fn new(calculation: T) -> Cacher<T, D, F> {
         Self {
