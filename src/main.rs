@@ -4,7 +4,7 @@ use std::ops::Deref;
 use std::rc::{Rc, Weak};
 use std::sync::{mpsc, Arc, Mutex};
 use std::time::Duration;
-use std::{collections::HashMap, fmt::Display, fs::File, io, io::ErrorKind, thread};
+use std::{collections::HashMap, fmt::Display, fs, fs::File, io, io::ErrorKind, thread};
 
 fn main() {
     let mut s = String::from("Hello");
@@ -217,7 +217,7 @@ fn main() {
     };
     println!("{:?}", f.metadata());
 
-    match read_username_from_file() {
+    match read_username_from_file("hello2.txt") {
         Ok(st) => println!("{}", st),
         Err(err) => panic!("There was a problem read string: {:?}", err),
     };
@@ -410,7 +410,7 @@ fn main() {
             leaf.parent.borrow().upgrade(),
         );
     } // -> 离开作用域，此时，Rc<branch> 的强引用（strong_count）为 0，但是 Weak<branch> 弱引用数（weak_count）仍然为 1（引用 Weak<branch> 的 Rc<leaf> 仍然存在），
-    // weak_count 无需计数为 0 就能使 Rc<branch> 实例被清理。
+      // weak_count 无需计数为 0 就能使 Rc<branch> 实例被清理。
     println!(
         "leaf strong = {}, weak = {}, parent = {:?}",
         Rc::strong_count(&leaf),
@@ -949,7 +949,7 @@ fn main() {
     let s1 = String::from("Hello, ");
     let s2 = String::from("World!");
     let s3 = s1 + &s2; // 注意 s1 被移动了，不能继续使用
-    // println!("{} {} {}", s1, s3, s2);
+                       // println!("{} {} {}", s1, s3, s2);
     println!("{} {}", s3, s2);
 
     let hello = "测试中文字符串";
@@ -1039,7 +1039,49 @@ fn main() {
     let m = Message::Quit;
     match m {
         Message::Write(s) => println!("{}", s),
+        // 此处可使用任意字符匹配其它情况
         abc => println!("{:?}", abc),
+    };
+
+    println!("----------------错误传递--------------");
+    let r = read_username_from_file("hello2.txt");
+    match r {
+        Ok(s) => println!("read from file result: {}", s),
+        Err(e) => println!("read from file error: {:?}", e),
+    };
+
+    println!("--------------泛型--------------");
+    let p = Point1 { x: 5, y: 10 };
+
+    println!("p.x = {}", p.x());
+    println!("p.y = {}", p.y());
+
+    let p1 = Point1 { x: "hello", y: 'd' };
+    let p2 = p.mixup(p1);
+    println!("{:?}", p2);
+}
+
+#[derive(Debug)]
+struct Point1<T, U> {
+    x: T,
+    y: U,
+}
+
+impl<D, Z> Point1<D, Z> {
+    fn x(&self) -> &D {
+        &self.x
+    }
+}
+
+impl Point1<i32, i32> {
+    fn y(&self) -> i32 {
+        self.y
+    }
+}
+
+impl<T, U> Point1<T, U> {
+    fn mixup<V, W>(self, p: Point1<V, W>) -> Point1<T, W> {
+        Point1 { x: self.x, y: p.y }
     }
 
 
@@ -1286,36 +1328,36 @@ mod performance_group {
     }
 }
 
-//  传播错误
-fn read_username_from_file() -> Result<String, io::Error> {
+///  传播错误
+fn read_username_from_file(path: &str) -> Result<String, io::Error> {
     //    1.
-    let f = File::open("hello.txt");
-
-    let mut f = match f {
-        Ok(file) => file,
-        Err(error) => return Err(error),
-    };
-
-    let mut s = String::new();
-    match f.read_to_string(&mut s) {
-        Ok(_) => Ok(s),
-        Err(e) => Err(e),
-    }
+    // let f = File::open(path);
+    //
+    // let mut f = match f {
+    //     Ok(file) => file,
+    //     Err(error) => return Err(error),
+    // };
+    //
+    // let mut s = String::new();
+    // match f.read_to_string(&mut s) {
+    //     Ok(_) => Ok(s),
+    //     Err(e) => Err(e),
+    // }
 
     //    2.
-    //    let mut f = File::open("hello.txt")?;
-    //
-    //    let mut s = String::new();
-    //    f.read_to_string(&mut s)?;
-    //    Ok(s)
+    let mut f = File::open(path)?;
+
+    let mut s = String::new();
+    f.read_to_string(&mut s)?;
+    Ok(s)
 
     //    3.
-    //    let mut s = String::new();
-    //    File::open("hello.txt")?.read_to_string(&mut s)?;
-    //    Ok(s)
+    // let mut s = String::new();
+    // File::open(path)?.read_to_string(&mut s)?;
+    // Ok(s)
 
     //    4.
-    //    fs::read_to_string("hello.txt")
+    // fs::read_to_string(path)
 }
 
 trait Summary {
@@ -1355,9 +1397,9 @@ impl ToString for Tweet {
 //}
 
 fn notify<T, U>(t: &T, u: &U) -> String
-    where
-        T: Summary + ToString,
-        U: Summary,
+where
+    T: Summary + ToString,
+    U: Summary,
 {
     format!("{}, {}", u.summarize(), t.to_string())
 }
@@ -1425,18 +1467,18 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
 }
 
 struct Cacher<T, D, F>
-    where
-        T: Fn(&D) -> F,
+where
+    T: Fn(&D) -> F,
 {
     calculation: T,
     value: HashMap<D, F>,
 }
 
 impl<T, D, F> Cacher<T, D, F>
-    where
-        D: Hash + Eq,
-        F: Copy,
-        T: Fn(&D) -> F,
+where
+    D: Hash + Eq,
+    F: Copy,
+    T: Fn(&D) -> F,
 {
     fn new(calculation: T) -> Cacher<T, D, F> {
         Self {
