@@ -22,7 +22,8 @@ fn main() {
     let x = x + 1;
     println!("The value of x is {}", x);
 
-    let x = "test";
+    // let x = "test";
+    let x: &'static str = "test";
     println!("The value of x is {}", x);
 
     // 可变变量
@@ -1025,14 +1026,12 @@ fn main() {
         //     File::create(fnames).unwrap()
         // }
         Err(e) => match e.kind() {
-            ErrorKind::NotFound => {
-                match File::create(fnames) {
-                    Ok(f) => f,
-                    Err(e) => panic!("Problem creating the file: {:?}", e),
-                }
-            }
+            ErrorKind::NotFound => match File::create(fnames) {
+                Ok(f) => f,
+                Err(e) => panic!("Problem creating the file: {:?}", e),
+            },
             oe => panic!("Problem opening the file: {:?}", oe),
-        }
+        },
     };
     println!("{:?}", file);
 
@@ -1042,6 +1041,15 @@ fn main() {
         Message::Write(s) => println!("{}", s),
         abc => println!("{:?}", abc),
     }
+
+
+    let nms = vec![String::from("Blue"), String::from("Yellow")];
+    let x4 = &[String::from("Blue"), String::from("Yellow")];
+    println!("{:?} {:?}", nms, x4);
+
+    // let a = [1, 2, 3, 4, 5];
+
+    let slice = &[1,2];
 }
 
 fn test_tuple(t: (i32, &str)) {
