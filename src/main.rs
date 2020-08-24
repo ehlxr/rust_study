@@ -238,6 +238,8 @@ fn main() {
         reply: false,
         retweet: false,
     };
+    println!("{}", t.to_string());
+
     let t1 = returns_summarizable();
 
     println!("{}", notify(&t, &t1));
@@ -247,7 +249,7 @@ fn main() {
     println!("The largest number is {}", result);
 
     let char_list = vec!['y', 'm', 'a', 'q'];
-    let result = largest(&char_list);
+    let result = largest2(&char_list);
     println!("The largest char is {}", result);
 
     // ---------------------------
@@ -1104,6 +1106,8 @@ fn add_to_count(inc: u32) {
     }
 }
 
+use core::fmt;
+use std::fmt::Formatter;
 use std::io::Read;
 use std::slice;
 
@@ -1372,9 +1376,19 @@ impl Summary for Tweet {
     }
 }
 
-impl ToString for Tweet {
-    fn to_string(&self) -> String {
-        format!("{:?}", self)
+// impl ToString for Tweet {
+//     fn to_string(&self) -> String {
+//         format!("{:?}", self)
+//     }
+// }
+
+impl Display for Tweet {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "Tweet username: {}, content: {}",
+            self.username, self.content
+        )
     }
 }
 
@@ -1417,10 +1431,22 @@ fn largest<T: PartialOrd + Copy>(list: &[T]) -> T {
     }
 
     // for item in list.iter() {
-    //        if *item > largest {
-    //            largest = *item;
-    //        }
-    //    }
+    //     if *item > largest {
+    //         largest = *item;
+    //     }
+    // }
+
+    return largest;
+}
+
+fn largest2<T: PartialOrd>(list: &[T]) -> &T {
+    let mut largest = &list[0];
+
+    for item in list.iter() {
+        if item > largest {
+            largest = item;
+        }
+    }
 
     return largest;
 }
@@ -1560,6 +1586,11 @@ impl Iterator for Counter {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn it_works() {
+        assert_eq!(2 + 2, 4);
+    }
+
     use super::*;
 
     #[test]
