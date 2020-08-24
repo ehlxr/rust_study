@@ -22,7 +22,8 @@ fn main() {
     let x = x + 1;
     println!("The value of x is {}", x);
 
-    let x = "test";
+    // let x = "test";
+    let x: &'static str = "test";
     println!("The value of x is {}", x);
 
     // 可变变量
@@ -1084,6 +1085,15 @@ impl<T, U> Point1<T, U> {
     fn mixup<V, W>(self, p: Point1<V, W>) -> Point1<T, W> {
         Point1 { x: self.x, y: p.y }
     }
+
+
+    let nms = vec![String::from("Blue"), String::from("Yellow")];
+    let x4 = &[String::from("Blue"), String::from("Yellow")];
+    println!("{:?} {:?}", nms, x4);
+
+    // let a = [1, 2, 3, 4, 5];
+
+    let slice = &[1,2];
 }
 
 fn test_tuple(t: (i32, &str)) {
