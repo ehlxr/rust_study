@@ -1483,39 +1483,79 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     }
 }
 
-struct Cacher<T, D, F>
+// struct Cacher<T>
+// where
+//     T: Fn(u32) -> u32,
+// {
+//     calculation: T,
+//     value: Option<u32>,
+// }
+//
+// impl<T> Cacher<T>
+// where
+//     T: Fn(u32) -> u32,
+// {
+//     fn new(calculation: T) -> Cacher<T> {
+//         Self {
+//             calculation,
+//             value: None,
+//         }
+//     }
+//
+//     fn value(&mut self, args: u32) -> u32 {
+//         match self.value {
+//             Some(&v) => v,
+//             None => {
+//                 let v = (self.calculation)(args);
+//                 v
+//             }
+//         }
+//     }
+// }
+
+struct Cacher<T, K, V>
 where
-    T: Fn(&D) -> F,
+    T: Fn(&K) -> V,
 {
     calculation: T,
-    value: HashMap<D, F>,
+    value: HashMap<K, V>,
 }
 
-impl<T, D, F> Cacher<T, D, F>
+impl<T, K, V> Cacher<T, K, V>
 where
-    D: Hash + Eq,
-    F: Copy,
-    T: Fn(&D) -> F,
+    V: Copy,
+    K: Hash + Eq,
+    T: Fn(&K) -> V,
 {
-    fn new(calculation: T) -> Cacher<T, D, F> {
+    fn new(calculation: T) -> Cacher<T, K, V> {
         Self {
             calculation,
-            value: HashMap::<D, F>::new(),
+            value: HashMap::<K, V>::new(),
         }
     }
 
-    fn value(&mut self, args: D) -> F {
-        match self.value.get(&args) {
+    fn value(&mut self, args: K) -> V {
+        let value = &mut self.value;
+
+        match value.get(&args) {
             Some(&v) => v,
             None => {
-                let v = (self.calculation)(&args);
-                let v1 = v.clone();
-
-                self.value.insert(args, v);
-
-                v1
+                let x = (self.calculation)(&args);
+                let x1 = x.clone();
+                value.insert(args, x);
+                x1
             }
         }
+
+        // match self.value.get(&args) {
+        //     Some(&v) => v,
+        //     None => {
+        //         let x = (self.calculation)(&args);
+        //         let x1 = x.clone();
+        //         self.value.insert(args, x);
+        //         x1
+        //     }
+        // }
     }
 }
 
@@ -1617,6 +1657,7 @@ mod tests {
         });
 
         let v = c.value("tetsss");
+        let v = c.value("s");
         assert_eq!(v, 7);
     }
 
