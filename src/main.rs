@@ -916,7 +916,7 @@ fn main() {
         Box::new(|x| x + 1)
     }
     let rc = returns_closure();
-    println!("{}", rc(12));
+    // println!("{}", rc(12));
 
     // ---------------------------
     println!("---------------------------");
@@ -958,11 +958,11 @@ fn main() {
     for c in hello.chars() {
         print!("{} ", c);
     }
-    println!("");
+
     for b in hello.bytes() {
         print!("{} ", b);
     }
-    println!("");
+
     // let s = hello[1]; // Rust 的字符串不支持索引
     // let s = &hello[0..4]; // thread 'main' panicked at 'byte index 4 is not a char boundary; it is inside '试' (bytes 3..6) of `测试中文字符串`', src/libcore/str/mod.rs:2219:5
     println!("{}", &hello[0..3]);
@@ -1085,15 +1085,6 @@ impl<T, U> Point1<T, U> {
     fn mixup<V, W>(self, p: Point1<V, W>) -> Point1<T, W> {
         Point1 { x: self.x, y: p.y }
     }
-
-
-    let nms = vec![String::from("Blue"), String::from("Yellow")];
-    let x4 = &[String::from("Blue"), String::from("Yellow")];
-    println!("{:?} {:?}", nms, x4);
-
-    // let a = [1, 2, 3, 4, 5];
-
-    let slice = &[1,2];
 }
 
 fn test_tuple(t: (i32, &str)) {
