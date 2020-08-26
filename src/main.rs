@@ -351,7 +351,6 @@ fn main() {
     println!("{:?}",zip.next().unwrap());
     println!("{:?}",zip.next().unwrap());
     println!("{:?}",zip.next().unwrap());
-    println!("{:?}",zip.next().);
 
     // ---------------------------
     println!("----------------------------------------");
