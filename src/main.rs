@@ -331,19 +331,27 @@ fn main() {
     println!("{:?}", in_my_size);
 
     let counter = Counter::new();
-    let v: Vec<_> = counter.into_iter().map(|x| x + 1).collect();
+    let v: Vec<_> = counter.into_iter().map(|x| x).collect();
     println!("{:?}", v);
     let v: Vec<_> = Counter::new()
         .zip(Counter::new().skip(1))
-        .map(|(a, b)| a * b)
+        .map(|(a, b)| a)
         .collect();
-    println!("{:?}", v);
+    println!("Counter zip map: {:?}", v);
     let sum: u32 = Counter::new()
         .zip(Counter::new().skip(1))
         .map(|(a, b)| a * b)
-        .filter(|x| x % 3 == 0)
+        // .filter(|x| x % 3 == 0)
         .sum();
-    println!("{}", sum);
+    println!("Counter sum: {}", sum);
+    let mut  zip = Counter::new().zip(Counter::new());
+
+    println!("{:?}",zip.next().unwrap());
+    println!("{:?}",zip.next().unwrap());
+    println!("{:?}",zip.next().unwrap());
+    println!("{:?}",zip.next().unwrap());
+    println!("{:?}",zip.next().unwrap());
+    println!("{:?}",zip.next().);
 
     // ---------------------------
     println!("----------------------------------------");
