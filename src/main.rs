@@ -811,7 +811,7 @@ fn main() {
 
     let mut v = vec![1, 2, 3, 4, 5, 6];
     let r = &mut v[..];
-    //    let (a, b) = r.split_at_mut(3);
+    let (_a, _b) = r.split_at_mut(3);
     let (a, b) = split_at_mut(r, 3);
     println!("{:?}", a);
     println!("{:?}", b);
@@ -881,7 +881,7 @@ fn main() {
     impl Red for Ball<'_> {}
 
     let num = 5;
-    let obj = Box::new(Ball { diameter: &num }) as Box<dyn Red>;
+    let _obj = Box::new(Ball { diameter: &num }) as Box<dyn Red>;
 
     // ---------------------------
     println!("---------------------------");
@@ -922,7 +922,7 @@ fn main() {
     fn returns_closure() -> Box<dyn Fn(i32) -> i32> {
         Box::new(|x| x + 1)
     }
-    let rc = returns_closure();
+    let _rc = returns_closure();
     // println!("{}", rc(12));
 
     // ---------------------------
@@ -1068,6 +1068,13 @@ fn main() {
     let p1 = Point1 { x: "hello", y: 'd' };
     let p2 = p.mixup(p1);
     println!("{:?}", p2);
+
+    println!("-------------完全限定语法与消歧义：调用相同名称的方法----------");
+    let person = Human;
+    Pilot::fly(&person);
+    Wizard::fly(&person);
+    // person.fly();
+    Human::fly(&person);
 }
 
 #[derive(Debug)]
@@ -1756,5 +1763,33 @@ mod tests {
 
         // assert_eq!(mock_messenger.sent_messages.len(), 1);
         assert_eq!(mock_messenger.sent_messages.borrow().len(), 1);
+    }
+}
+
+trait Pilot {
+    fn fly(&self);
+}
+
+trait Wizard {
+    fn fly(&self);
+}
+
+struct Human;
+
+impl Pilot for Human {
+    fn fly(&self) {
+        println!("This is your captain speaking.");
+    }
+}
+
+impl Wizard for Human {
+    fn fly(&self) {
+        println!("Up!");
+    }
+}
+
+impl Human {
+    fn fly(&self) {
+        println!("*waving arms furiously*");
     }
 }
