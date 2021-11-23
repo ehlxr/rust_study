@@ -1,10 +1,13 @@
+mod sub_mod;
+mod user;
+
 use std::cell::RefCell;
 use std::hash::Hash;
 use std::ops::Deref;
 use std::rc::{Rc, Weak};
 use std::sync::{mpsc, Arc, Mutex};
 use std::time::Duration;
-use std::{collections::HashMap, fmt::Display, fs, fs::File, io, io::ErrorKind, thread};
+use std::{collections::HashMap, fmt::Display, fs::File, io, io::ErrorKind, thread};
 
 fn main() {
     let mut s = String::from("Hello");
@@ -87,8 +90,8 @@ fn main() {
     println!("----------------------------------------");
     let my_str = String::from("hello world!");
     // let my_str = "hello world!";
-    println!("{}, {}", my_str, first_words(&my_str[..]));
-    println!("get first word: {}", first_words("hello world"));
+    println!("{}, {}", my_str, sub_mod::first_words(&my_str[..]));
+    println!("get first word: {}", sub_mod::first_words("hello world"));
 
     let rect = Rectangle {
         width: 21,
@@ -293,7 +296,7 @@ fn main() {
     d(&mut s);
     println!("{}", s);
 
-    generate_workout(10, 3);
+    sub_mod::generate_workout(10, 3);
 
     // ---------------------------
     println!("----------------------------------------");
@@ -602,7 +605,7 @@ fn main() {
 
     let x: u32 = 5;
     let point = (3, x as i32);
-    print_coordinates(&point);
+    sub_mod::print_coordinates(&point);
 
     // ---------------------------
     println!("---------------------------");
@@ -812,7 +815,7 @@ fn main() {
     let mut v = vec![1, 2, 3, 4, 5, 6];
     let r = &mut v[..];
     let (_a, _b) = r.split_at_mut(3);
-    let (a, b) = split_at_mut(r, 3);
+    let (a, b) = sub_mod::split_at_mut(r, 3);
     println!("{:?}", a);
     println!("{:?}", b);
 
@@ -935,7 +938,7 @@ fn main() {
 
     // Pancakes::hello_macro();
 
-    let user1 = User {
+    let user1 = user::User {
         username: String::from("hllo"),
         email: String::from("hell@world.com"),
         sign_in_count: 1,
@@ -1105,14 +1108,6 @@ fn test_tuple(t: (i32, &str)) {
     println!("{} {}", t.0, t.1);
 }
 
-#[derive(Debug)]
-struct User {
-    username: String,
-    email: String,
-    sign_in_count: u64,
-    active: bool,
-}
-
 static mut COUNTER: u32 = 0;
 
 fn add_to_count(inc: u32) {
@@ -1124,29 +1119,6 @@ fn add_to_count(inc: u32) {
 use core::fmt;
 use std::fmt::Formatter;
 use std::io::Read;
-use std::slice;
-
-fn split_at_mut(slice: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
-    // let len = slice.len();
-    // assert!(mid <= len);
-    // (&mut slice[..mid], &mut slice[mid..])
-
-    let len = slice.len();
-    let ptr = slice.as_mut_ptr();
-
-    assert!(mid <= len);
-
-    unsafe {
-        (
-            slice::from_raw_parts_mut(ptr, mid),
-            slice::from_raw_parts_mut(ptr.offset(mid as isize), len - mid),
-        )
-    }
-}
-
-fn print_coordinates(&(x, y): &(i32, i32)) {
-    println!("Current location: ({}, {})", x, y);
-}
 
 #[derive(Debug)]
 struct Bt {
@@ -1282,18 +1254,6 @@ impl Message {
     fn call(&self) {
         println!("this message call.");
     }
-}
-
-//fn first_words<'a>(s: &'a str) -> &'a str {
-fn first_words(s: &str) -> &str {
-    let b = s.as_bytes();
-    for (i, &item) in b.iter().enumerate() {
-        if item == b' ' {
-            return &s[0..i];
-        }
-    }
-
-    &s[..]
 }
 
 #[derive(Debug)]
@@ -1570,34 +1530,6 @@ where
         //         x1
         //     }
         // }
-    }
-}
-
-fn generate_workout(intensity: u32, random_number: u32) {
-    // let calculation = |num: u32| -> u32 {
-    //     println!("calculating slowly...");
-    //     thread::sleep(Duration::from_secs(2));
-    //     num
-    // };
-
-    let mut expensive_result = Cacher::new(|num| {
-        println!("calculating slowly...");
-        thread::sleep(Duration::from_millis(500));
-        num + 1
-    });
-
-    if intensity < 25 {
-        println!("Today, do {} pushups!", expensive_result.value(intensity));
-        println!("Next, do {} situps!", expensive_result.value(intensity));
-    } else {
-        if random_number == 3 {
-            println!("Take a break today! Remember to stay hydrated!");
-        } else {
-            println!(
-                "Today, run for {} minutes!",
-                expensive_result.value(intensity)
-            );
-        }
     }
 }
 
