@@ -1,3 +1,4 @@
+mod ownership_1;
 mod sub_mod;
 mod tests;
 mod user;
@@ -49,6 +50,8 @@ fn main() {
     let s1 = &mut s;
     // 在特定作用域中的特定数据有且只有一个可变引用
     // let s2 = &mut s;
+
+    ownership_1::test_ownership1();
 
     change(s1);
     println!("{}", s1);
