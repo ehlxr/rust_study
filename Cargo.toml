@@ -1,5 +1,5 @@
 [package]
-name = "rust_study"
+name = "rss"
 version = "0.1.0"
 authors = ["ehlxr <ehlxr.me@gmail.com>"]
 edition = "2018"
