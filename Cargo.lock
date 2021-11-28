@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "rss"
+name = "rust_study"
 version = "0.1.0"

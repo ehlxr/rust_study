@@ -9,7 +9,7 @@ use std::sync::{mpsc, Arc, Mutex};
 use std::time::Duration;
 use std::{collections::HashMap, fs::File, io::ErrorKind, thread};
 
-use rss::*;
+use rust_study::*;
 
 fn main() {
     let mut s = String::from("Hello");
