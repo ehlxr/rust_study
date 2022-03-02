@@ -1083,4 +1083,12 @@ fn main() {
     Wizard::fly(&person);
     // person.fly();
     Human::fly(&person);
+
+    let black = Color1(0, 9, 10);
+
+    let Color1(x, y, z) = black;
+    println!("{} {} {}", x, y, z);
+    println!("{} {} {}", black.0, black.1, black.2);
 }
+
+struct Color1(i32, i32, i32);
